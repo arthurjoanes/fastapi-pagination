@@ -1,5 +1,6 @@
-`fastapi_pagination.ext.sqlalchemy.paginate` allows you to paginate `sqlalchemy` queries easily.
-It can work for both `sync` and `async` SQLAlchemy engines.
+`fastapi_pagination.ext.sqlalchemy.paginate` paginates queries using a synchronous SQLAlchemy connection or session.
+Use `await fastapi_pagination.ext.sqlalchemy.apaginate(...)` with an asynchronous connection or session.
+See the [installation instructions](general.md#installation) for the required asynchronous dependencies.
 
 `paginate` accepts the following `sqlalchemy` related arguments:
 

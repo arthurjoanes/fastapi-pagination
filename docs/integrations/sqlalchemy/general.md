@@ -3,7 +3,27 @@ It is an ORM (Object Relational Mapper) that abstracts the database layer and pr
 to interact with the database. SQLAlchemy supports a wide range of databases, including
 SQLite, MySQL, PostgreSQL, and Oracle.
 
-`fastapi-pagination` provides `paginate` that allows you to paginate `sqlalchemy` queries easily.
+`fastapi-pagination` provides `paginate` for synchronous queries and `apaginate` for asynchronous queries.
+
+## Installation
+
+Install the SQLAlchemy integration:
+
+```bash
+pip install "fastapi-pagination[sqlalchemy]"
+```
+
+For `apaginate`, also install [SQLAlchemy's asyncio extra](https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html#asyncio-platform-installation-notes-including-apple-m1)
+and an asynchronous driver. For example, SQLite uses `aiosqlite`:
+
+```bash
+pip install "SQLAlchemy[asyncio]" aiosqlite
+```
+
+The `asyncio` extra supplies `greenlet`, which SQLAlchemy's asynchronous engine and session require.
+Pass an `AsyncSession` or `AsyncConnection` to `apaginate` and await its result.
+
+## Synchronous example
 
 ```py
 from sqlalchemy import create_engine, select
