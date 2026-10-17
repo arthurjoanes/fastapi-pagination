@@ -11,6 +11,26 @@ T = TypeVar("T")
 C = TypeVar("C")
 
 
+@pytest.mark.parametrize(
+    ("total", "size", "pages"),
+    [
+        (0, 1, 0),
+        (100, 100, 1),
+        (101, 100, 2),
+        (9007199254740993, 1, 9007199254740993),
+        (9007199254740993, 2, 4503599627370497),
+        (9223372036854775807, 100, 92233720368547759),
+        (10**400, 100, 10**398),
+    ],
+    ids=["empty", "exact-page", "partial-page", "large-total", "large-remainder", "int64-max", "beyond-float"],
+)
+def test_page_count_preserves_integer_precision(total, size, pages):
+    page = Page[int].create([], Params(size=size), total=total)
+
+    assert page.total == total
+    assert page.pages == pages
+
+
 def test_zero_size():
     class CustomParams(Params):
         size: int | None = Query(0)

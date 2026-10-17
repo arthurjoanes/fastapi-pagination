@@ -6,7 +6,6 @@ __all__ = [
 ]
 
 from collections.abc import Sequence
-from math import ceil
 from typing import Any, Generic
 
 from fastapi import Query
@@ -56,7 +55,7 @@ class Page(BasePage[TAny], Generic[TAny]):
         if size in {0, None}:
             pages = 0
         elif total is not None:
-            pages = ceil(total / size)
+            pages = (total + size - 1) // size
         else:
             pages = None
 
