@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from pytest_asyncio import fixture as async_fixture
 from sqlalchemy import Column, ForeignKey, Integer, String, create_engine
 from sqlalchemy.orm import Session, relationship
 
@@ -19,14 +20,22 @@ except ImportError:
     from sqlalchemy.ext.declarative import declarative_base
 
 
-@pytest.fixture(scope="session")
-def sa_engine(database_url: str, is_async_db: bool):
+@async_fixture(scope="session")
+async def sa_engine(database_url: str, is_async_db: bool):
     if is_async_db:
         from sqlalchemy.ext.asyncio import create_async_engine
 
-        return create_async_engine(database_url)
+        engine = create_async_engine(database_url)
+    else:
+        engine = create_engine(database_url)
 
-    return create_engine(database_url)
+    try:
+        yield engine
+    finally:
+        if is_async_db:
+            await engine.dispose()
+        else:
+            engine.dispose()
 
 
 @pytest.fixture(scope="session")
