@@ -7,7 +7,6 @@ __all__ = [
 ]
 
 from abc import ABC
-from math import ceil
 from typing import Any, TypeAlias
 
 from typing_extensions import TypeVar
@@ -25,7 +24,7 @@ def resolve_default_links(_page: BasePage, /, only_path: bool | None = None) -> 
 
     return create_links(
         first={"page": 1},
-        last={"page": ceil(total / size) if total and size else 1},
+        last={"page": (total + size - 1) // size if total and size else 1},
         next={"page": page + 1}
         if page is not None and size is not None and total is not None and page * size < total
         else None,

@@ -5,7 +5,7 @@ from fastapi import Depends, FastAPI, status
 from fastapi.testclient import TestClient
 from pydantic import BaseModel
 
-from fastapi_pagination import add_pagination, paginate, pagination_ctx
+from fastapi_pagination import Params, add_pagination, paginate, pagination_ctx
 from fastapi_pagination.customization import CustomizedPage
 from fastapi_pagination.links import LimitOffsetPage, Page, UseHeaderLinks, UseLimitOffsetHeaderLinks
 
@@ -69,6 +69,28 @@ async def route_3():
 
 
 add_pagination(app)
+
+
+@pytest.mark.parametrize("header_links", [False, True], ids=["body", "header"])
+@pytest.mark.parametrize(
+    ("total", "size", "last_page"),
+    [(9007199254740993, 2, 4503599627370497), (10**400, 100, 10**398)],
+    ids=["beyond-float-precision", "beyond-float-range"],
+)
+def test_default_last_link_preserves_integer_totals(header_links, total, size, last_page):
+    large_app = FastAPI()
+
+    @large_app.get("/large", response_model=PageDefaultLinks[int] if header_links else Page[int])
+    def route():
+        return paginate([], Params(size=size), length_function=lambda _: total)
+
+    add_pagination(large_app)
+    response = TestClient(large_app).get(f"/large?size={size}&filter=kept")
+
+    assert response.status_code == status.HTTP_200_OK
+    last = response.links["last"]["url"] if header_links else response.json()["links"]["last"]
+    assert last == f"/large?size={size}&filter=kept&page={last_page}"
+    assert response.json()["pages"] == last_page
 
 
 @pytest.mark.parametrize(
