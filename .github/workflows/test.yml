@@ -50,6 +50,7 @@ jobs:
         env:
           PY_VERSION: ${{ matrix.python-version }}
           DEPS_RESOLUTION: ${{ matrix.resolution }}
+          PYTEST_ADDOPTS: --maxfail=1 --tb=short
         run: |
           bash scripts/ci-test.sh
 
