@@ -62,31 +62,14 @@ cases = _Cases({"default"})
 
 
 def async_testsuite(cls: TBasePaginationTestSuite) -> TBasePaginationTestSuite:
-    @pytest.fixture(scope="session")
-    def is_async_db(self):
-        return True
-
-    cls.is_async_db = is_async_db
-    return cls
+    return pytest.mark.parametrize("is_async_db", [True], ids=["async"], indirect=True, scope="session")(cls)
 
 
 def sync_testsuite(cls: TBasePaginationTestSuite) -> TBasePaginationTestSuite:
-    @pytest.fixture(scope="session")
-    def is_async_db(self):
-        return False
-
-    cls.is_async_db = is_async_db
-    return cls
+    return pytest.mark.parametrize("is_async_db", [False], ids=["sync"], indirect=True, scope="session")(cls)
 
 
 def async_sync_testsuite(cls: TBasePaginationTestSuite) -> TBasePaginationTestSuite:
-    @pytest.fixture(
-        scope="session",
-        params=[True, False],
-        ids=["async", "sync"],
+    return pytest.mark.parametrize("is_async_db", [True, False], ids=["async", "sync"], indirect=True, scope="session")(
+        cls
     )
-    def is_async_db(self, request):
-        return request.param
-
-    cls.is_async_db = is_async_db
-    return cls

@@ -268,8 +268,9 @@ def _setup_firestore(_firestore_project_id: str, raw_data: RawData):
 
 
 @pytest.fixture(scope="session")
-def is_async_db() -> bool:
-    return False
+def is_async_db(request) -> bool:
+    # Share one fixture so changing modes invalidates session-scoped database resources.
+    return getattr(request, "param", False)
 
 
 @pytest.fixture(
