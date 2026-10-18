@@ -12,29 +12,15 @@
 
 ## Introduction
 
-`fastapi-pagination` is a Python library designed to simplify pagination in FastAPI applications. 
-It provides a set of utility functions and data models to help you paginate your database queries 
-and return paginated responses to your clients.
+`fastapi-pagination` adds page-based and cursor-based pagination to FastAPI endpoints.
+It provides request parameters, response models and integrations for SQL and NoSQL databases,
+including `SQLAlchemy`, `Tortoise ORM` and `PyMongo`.
 
-With `fastapi-pagination`, you can easily define pagination parameters in your FastAPI endpoint functions,
-and use them to generate paginated responses that include the requested subset of your data.
-The library supports a variety of pagination strategies, including cursor-based pagination and page-based pagination.
-
-`fastapi-pagination` is built on top of the popular `fastapi` library, and it works with a wide range
-of SQL and NoSQL database frameworks. It also supports async/await syntax and is compatible with Python 3.10 and higher.
-
-Features:
-
-* Simplifies pagination in FastAPI applications.
-* Supports a variety of pagination strategies, including cursor-based pagination and page-based pagination
-* Works with a wide range of SQL and NoSQL database frameworks, including `SQLAlchemy`, `Tortoise ORM`, and `PyMongo`.
-* Supports async/await syntax.
-* Compatible with Python 3.10 and higher.
+The library supports synchronous and asynchronous code and requires Python 3.10 or later.
 
 ----
 
-For more information on how to use fastapi-pagination, please refer to the
-[official documentation](https://uriyyo-fastapi-pagination.netlify.app/).
+See the [documentation](https://uriyyo-fastapi-pagination.netlify.app/) for database integrations and customization.
 
 ---
 
@@ -46,8 +32,8 @@ pip install fastapi-pagination
 
 ## Quickstart
 
-All you need to do is to use `Page` class as a return type for your endpoint and call `paginate` function
-on data you want to paginate.
+Register pagination with `add_pagination(app)`, annotate the endpoint with `Page[YourModel]`,
+and pass the data to `paginate`.
 
 ```py
 from fastapi import FastAPI
@@ -78,9 +64,9 @@ async def get_users() -> Page[UserOut]:
     return paginate(users)  # use paginate function to paginate your data
 ```
 
-Please, be careful when you work with databases, because default `paginate` will require to load all data in memory.
-
-For instance, if you use `SQLAlchemy` you can use `paginate` from `fastapi_pagination.ext.sqlalchemy` module.
+The default `paginate` function requires all data in memory. For database queries, use the matching
+integration so pagination runs in the database. For example, SQLAlchemy uses
+`paginate` from `fastapi_pagination.ext.sqlalchemy`:
 
 ```python
 from sqlalchemy import select
@@ -94,7 +80,7 @@ def get_users(db: Session = Depends(get_db)) -> Page[UserOut]:
 
 ---
 
-Code from `Quickstart` will generate OpenAPI schema as below:
+The quickstart generates this OpenAPI schema:
 
 <div align="center">
 <img alt="app-example" src="https://raw.githubusercontent.com/uriyyo/fastapi-pagination/main/docs/img/example.png">
